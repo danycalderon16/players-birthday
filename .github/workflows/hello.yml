@@ -1,0 +1,31 @@
+name: Hello World
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Say Hello
+      run: |
+        echo "Hello from GitHub Actions!"
+        echo "This is the Football Birthdays project"
+        echo "Current date: $(date)"
+        
+    - name: Show Node.js version
+      run: |
+        node --version
+        npm --version
+        
+    - name: List files
+      run: |
+        echo "Project structure:"
+        ls -la 
