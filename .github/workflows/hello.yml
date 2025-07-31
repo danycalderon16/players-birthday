@@ -14,11 +14,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Say Hello
+    - name: Open me
       run: |
         echo "Hello from GitHub Actions!"
-        echo "This is the Football Birthdays project"
-        echo "Current date: $(date)"
+        echo "I love you my darling, L&D 27 dic 2024"
         
     - name: Show Node.js version
       run: |
