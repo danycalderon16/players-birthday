@@ -87,4 +87,74 @@ export class PlayersService {
 
     return true
   }
+
+  static async getRandomPlayer(): Promise<Player | null> {
+    try {
+      // Get total count of players
+      const { count, error: countError } = await supabase
+        .from('players')
+        .select('*', { count: 'exact', head: true })
+
+      if (countError) {
+        console.error('Error getting player count:', countError)
+        return null
+      }
+
+      if (!count || count === 0) {
+        console.log('No players found in the database')
+        return null
+      }
+
+      // Generate random offset
+      const randomOffset = Math.floor(Math.random() * count)
+
+      // Fetch random player
+      const { data, error } = await supabase
+        .from('players')
+        .select('*')
+        .range(randomOffset, randomOffset)
+        .single()
+
+      if (error) {
+        console.error('Error fetching random player:', error)
+        return null
+      }
+
+      return data
+    } catch (error) {
+      console.error('Unexpected error:', error)
+      return null
+    }
+  }
+
+  static async getCurrentRandomPlayer(): Promise<Player | null> {
+    try {
+      const { data, error } = await supabase
+        .from('random_player')
+        .select('*')
+        .single()
+
+      if (error) {
+        console.error('Error fetching current random player:', error)
+        return null
+      }
+
+      if (!data) {
+        console.log('No random player found in random_player table')
+        return null
+      }
+
+      // Convert random_player data to Player format
+      return {
+        id: data.player_id,
+        name: data.player_name,
+        team: data.player_team,
+        birthdate: data.player_birthday,
+        created_at: data.updated_at
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error)
+      return null
+    }
+  }
 } 

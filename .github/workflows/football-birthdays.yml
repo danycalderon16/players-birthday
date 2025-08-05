@@ -1,0 +1,31 @@
+name: Football Birthdays Daily
+
+on:
+  schedule:
+    # Ejecutar diariamente a las 9:00 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Permite ejecutar manualmente
+
+jobs:
+  football-birthdays:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run football birthdays script
+      env:
+        CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      run: node scripts/football-birthdays.cjs 
