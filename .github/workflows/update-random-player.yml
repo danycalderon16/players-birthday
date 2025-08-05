@@ -27,6 +27,19 @@ jobs:
     - name: Install dependencies
       run: pnpm install
       
+    - name: Check environment variables
+      run: |
+        if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ] || [ -z "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
+          echo "❌ Error: Missing Supabase environment variables"
+          echo "Please configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in repository secrets"
+          exit 1
+        else
+          echo "✅ Environment variables are configured"
+        fi
+      env:
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      
     - name: Update random player
       env:
         NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
