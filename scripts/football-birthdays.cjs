@@ -1,7 +1,6 @@
 const { createClient } = require('@supabase/supabase-js')
 require('dotenv').config()
 
-// Create Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
@@ -12,22 +11,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-const updateRandomPlayer = async () => {
+async function updateRandomPlayer() {
   try {
     // Get total count of players
     const { count, error: countError } = await supabase
       .from('players')
       .select('*', { count: 'exact', head: true })
 
-    console.log({count})
-
-    if (countError) {
-      console.error('Error getting player count:', countError)
-      return null
-    }
-
-    if (!count || count === 0) {
-      console.log('No players found in the database')
+    if (countError || !count || count === 0) {
       return null
     }
 
@@ -42,7 +33,6 @@ const updateRandomPlayer = async () => {
       .single()
 
     if (fetchError) {
-      console.error('Error fetching random player:', fetchError)
       return null
     }
 
@@ -50,10 +40,9 @@ const updateRandomPlayer = async () => {
     const { error: deleteError } = await supabase
       .from('random_player')
       .delete()
-      .neq('id', 0) // Delete all records
+      .neq('id', 0)
 
     if (deleteError) {
-      console.error('Error deleting existing random player:', deleteError)
       return null
     }
 
@@ -72,33 +61,23 @@ const updateRandomPlayer = async () => {
       .single()
 
     if (insertError) {
-      console.error('Error inserting random player:', insertError)
       return null
     }
 
     return insertedPlayer
+
   } catch (error) {
-    console.error('Unexpected error:', error)
     return null
   }
 }
 
-const main = async () => {
-  console.log('🎯 Actualizando jugador aleatorio en la tabla random_player...')
-  
+async function main() {
   const randomPlayer = await updateRandomPlayer()
   
   if (randomPlayer) {
-    console.log('✅ Jugador aleatorio actualizado exitosamente:')
-    console.log(`📝 Nombre: ${randomPlayer.player_name}`)
-    console.log(`🏟️  Equipo: ${randomPlayer.player_team}`)
-    console.log(`🎂 Fecha de nacimiento: ${randomPlayer.player_birthday}`)
-    console.log(`🌍 País: ${randomPlayer.player_country}`)
-    console.log(`⚽ Posición: ${randomPlayer.player_position}`)
-    console.log(`🆔 ID del jugador: ${randomPlayer.player_id}`)
-    console.log(`🕒 Actualizado: ${randomPlayer.updated_at}`)
+    console.log(`✅ Random player updated: ${randomPlayer.player_name} (${randomPlayer.player_team})`)
   } else {
-    console.log('❌ No se pudo actualizar el jugador aleatorio')
+    console.log('❌ Failed to update random player')
     process.exit(1)
   }
 }
